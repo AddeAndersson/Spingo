@@ -5,8 +5,8 @@ using UnityEngine;
 public class DiceScript : MonoBehaviour
 {
 	private string[] diceSides = {
+			"Spingo!",
 			"KAVQ",
-			"Spingo",
 			"GEJÖ",
 			"DESO",
 			"KIER",
@@ -23,10 +23,15 @@ public class DiceScript : MonoBehaviour
 
 	public string activeSide;
 
+	public void DiceClicked()
+	{
+		isClicked = true;
+	}
+
 	// Start is called before the first frame update
 	void Start()
     {
-        isClicked = true;
+        isClicked = false;
     }
 
     // Update is called once per frame
