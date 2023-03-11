@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class DiceScript : MonoBehaviour
 {
-	private: 
-		String[] diceSides = {
+	private string[] diceSides = {
 			"KAVQ",
 			"Spingo",
 			"GEJÖ",
@@ -18,17 +17,28 @@ public class DiceScript : MonoBehaviour
 			"ZABM",
 			"REDN",
 			"LATÅ"
-		};    
+		};
+
+	private bool isClicked;
+
+	public string activeSide;
 
 	// Start is called before the first frame update
 	void Start()
     {
-        
+        isClicked = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(isClicked)
+        {
+        	// Generate random number between 0 and 11
+        	int randomedNumber = Random.Range(0, 11);
+        	activeSide = diceSides[randomedNumber];
+        	print("Dice rolled: " + activeSide);
+        	isClicked = false;
+        }
     }
 }
