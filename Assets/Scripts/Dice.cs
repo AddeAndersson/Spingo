@@ -26,29 +26,27 @@ public class Dice : MonoBehaviour
 
 	private string activeSide;
 	private DiceState state;
-	
-	public string getActiveSide()
-	{
-		return activeSide;
-	}
 
-	public DiceState getState()
-	{
-		return state;
-	}
+    public DiceState State { get => state; set => state = value; }
+    public string ActiveSide { get => activeSide; set => activeSide = value; }
 
-	public void rollDice()
+    public void rollDice()
 	{
 		// Generate random number between 0 and 11
     	int randomedNumber = Random.Range(0, diceSides.Length);
-    	activeSide = diceSides[randomedNumber];
+    	this.ActiveSide = this.diceSides[randomedNumber];
 	}
+
+	void Awake()
+    {
+        this.ActiveSide = diceSides[0];
+        this.State = DiceState.waitingToBeRolled;
+    }
 
 	// Start is called before the first frame update
 	void Start()
     {
-        activeSide = diceSides[0];
-        state = DiceState.waitingToBeRolled;
+		
     }
 
     // Update is called once per frame

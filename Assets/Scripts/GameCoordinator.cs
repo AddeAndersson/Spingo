@@ -7,50 +7,48 @@ public class GameCoordinator : MonoBehaviour
     
 	public Dice dice = null;
     public Player[] players = null;
-    private Player currentPlayer = null;
-    private int currentPlayerIdx;
+    private int currentPlayerIdx = 0;
     private PlayerState[] playerStates;
 
     public void diceClicked()
     {
-        dice.rollDice();
-        currentPlayer.setState(PlayerState.chooseLetter);
-        print(currentPlayer.getName() + " rolled " + dice.getActiveSide() + ".");
+        this.dice.rollDice();
+        this.players[currentPlayerIdx].State = PlayerState.chooseLetter;
+        print($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}.");
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if(dice == null)
+        if(this.dice == null)
         {
             print("No dice was found.");
         }
 
-        if(players.Length == 0)
+        if(this.players.Length == 0)
         {
             print("No players were found.");
         }
+        
+        this.currentPlayerIdx = Random.Range(0, this.players.Length - 1);
+        this.players[currentPlayerIdx].State = PlayerState.rollDice;
+        this.players[currentPlayerIdx].makeAction();
 
-        currentPlayerIdx = Random.Range(0, players.Length - 1);
-        currentPlayer = players[currentPlayerIdx];
-        currentPlayer.setState(PlayerState.rollDice);
-        currentPlayer.makeAction();
-
-        playerStates = new PlayerState[players.Length];
+        this.playerStates = new PlayerState[players.Length];
         for(int i = 0; i < players.Length; i++)
         {
-            playerStates[i] = players[i].getState();
+            this.playerStates[i] = this.players[i].State;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        for(int i = 0; i < players.Length; i++)
+        for(int i = 0; i < this.players.Length; i++)
         {
-            if(playerStates[i] != players[i].getState())
+            if(this.playerStates[i] != this.players[i].State)
             {
-                playerStates[i] = players[i].makeAction();
+                this.playerStates[i] = this.players[i].makeAction();
             }
         }
     }
