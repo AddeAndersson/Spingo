@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameCoordinator : MonoBehaviour
 {
     
 	public Dice dice = null;
     public Player[] players = null;
+    public InputField[] letters = null;
     private int currentPlayerIdx = 0;
     private PlayerState[] playerStates;
 
@@ -15,6 +17,31 @@ public class GameCoordinator : MonoBehaviour
         this.dice.rollDice();
         this.players[currentPlayerIdx].State = PlayerState.chooseLetter;
         print($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}.");
+
+        // Set letters
+        for(int i = 0; i < 4; i++)
+        {
+            letters[i].GetComponent<Letter>().Clickable = true;
+            letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
+            letters[i].image.color = Color.white;
+        }
+
+        // Enable letters
+    }
+
+    public void letterClicked(string letter)
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            letters[i].GetComponent<Letter>().Clickable = false;
+        }
+
+        print(this.players[currentPlayerIdx].Name + " chose the letter '" + letter + "'.");
+        
+        for(int i = 0; i < players.Length; i++)
+        {
+            this.players[i].State = PlayerState.placeLetter;
+        }
     }
 
     // Start is called before the first frame update

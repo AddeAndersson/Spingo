@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public enum PlayerState {
@@ -16,6 +17,9 @@ public class Player : MonoBehaviour
 	private string name;
 	private int points;
     private PlayerState state;
+
+    // 2D array representing player tiles
+    private InputField[,] tiles;
 
     public int Points { get => points; set => points = value; }
     public string Name { get => name; set => name = value; }
@@ -51,26 +55,26 @@ public class Player : MonoBehaviour
         return this.State;
 	}
 
-    private char chooseLetter(string diceSide)
-    {
-        return diceSide[0];
-    }
-
-    private void placeLetter(char letter)
-    {
-        return;
-    }
-
     void Awake()
     {
         this.Name = "Bob";
         this.Points = 0;
         this.State = PlayerState.idle;
+        
+        // Set tiles
+        this.tiles = new InputField[5, 5];
+        for(int i = 0; i < 5; i++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                this.tiles[i, j] = GameObject.Find("Tile" + i.ToString() + j.ToString()).GetComponent<InputField>();
+            }
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 }
