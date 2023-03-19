@@ -14,7 +14,7 @@ public class Letter : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick (PointerEventData eventData)
     {
-        if(!clickable) return;
+        if(!Clickable) return;
         
         // Get value from input field and highlight
         InputField input = this.gameObject.GetComponent<InputField>();
@@ -29,7 +29,7 @@ public class Letter : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         this.index = (int)char.GetNumericValue(this.gameObject.name[6]);
-        this.clickable = false;
+        this.Clickable = false;
     }
 
     // Update is called once per frame

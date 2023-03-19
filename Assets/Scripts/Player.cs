@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     private PlayerState state;
 
     // 2D array representing player tiles
-    private InputField[,] tiles;
+    public InputField[,] tiles;
 
     public int Points { get => points; set => points = value; }
     public string Name { get => name; set => name = value; }

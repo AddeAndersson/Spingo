@@ -11,6 +11,9 @@ public class GameCoordinator : MonoBehaviour
     public InputField[] letters = null;
     private int currentPlayerIdx = 0;
     private PlayerState[] playerStates;
+    private string currentLetter;
+
+    public string CurrentLetter { get => currentLetter; set => currentLetter = value; }
 
     public void diceClicked()
     {
@@ -21,9 +24,9 @@ public class GameCoordinator : MonoBehaviour
         // Set letters
         for(int i = 0; i < 4; i++)
         {
-            letters[i].GetComponent<Letter>().Clickable = true;
-            letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
-            letters[i].image.color = Color.white;
+            this.letters[i].GetComponent<Letter>().Clickable = true;
+            this.letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
+            this.letters[i].image.color = Color.white;
         }
 
         // Enable letters
@@ -31,9 +34,11 @@ public class GameCoordinator : MonoBehaviour
 
     public void letterClicked(string letter)
     {
+        this.CurrentLetter = letter;
+
         for(int i = 0; i < 4; i++)
         {
-            letters[i].GetComponent<Letter>().Clickable = false;
+            this.letters[i].GetComponent<Letter>().Clickable = false;
         }
 
         print(this.players[currentPlayerIdx].Name + " chose the letter '" + letter + "'.");
@@ -41,6 +46,42 @@ public class GameCoordinator : MonoBehaviour
         for(int i = 0; i < players.Length; i++)
         {
             this.players[i].State = PlayerState.placeLetter;
+        }
+
+        for(int i = 0; i < players.Length; i++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                for(int n = 0; n < 5; n++)
+                {
+                    if(this.players[i].tiles[j, n].text == "")
+                    {
+                        this.players[i].tiles[j, n].GetComponent<Tile>().Clickable = true;
+                        this.players[i].tiles[j, n].image.color = Color.green;
+                    }
+                }
+            }
+        }
+    }
+
+    public void tileClicked(int playerIdx, int row, int column)
+    {
+        this.players[playerIdx].tiles[row, column].text = CurrentLetter;
+        this.players[playerIdx].State = PlayerState.idle;
+
+        for(int j = 0; j < 5; j++)
+        {
+            for(int n = 0; n < 5; n++)
+            {
+                this.players[playerIdx].tiles[j, n].GetComponent<Tile>().Clickable = false;
+                this.players[playerIdx].tiles[j, n].image.color = Color.white;
+            }
+        }
+
+        // Set letters
+        for(int i = 0; i < 4; i++)
+        {
+            this.letters[i].GetComponent<Letter>().Clickable = false;
         }
     }
 
@@ -59,6 +100,7 @@ public class GameCoordinator : MonoBehaviour
         
         this.currentPlayerIdx = Random.Range(0, this.players.Length - 1);
         this.players[currentPlayerIdx].State = PlayerState.rollDice;
+        this.dice.Clickable = true;
         this.players[currentPlayerIdx].makeAction();
 
         this.playerStates = new PlayerState[players.Length];
@@ -71,11 +113,32 @@ public class GameCoordinator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        int idlePlayers = 0;
+
         for(int i = 0; i < this.players.Length; i++)
         {
             if(this.playerStates[i] != this.players[i].State)
             {
                 this.playerStates[i] = this.players[i].makeAction();
+            }
+
+            if(this.playerStates[i] == PlayerState.idle)
+            {
+                idlePlayers++;
+            }
+        }
+
+        if(idlePlayers == this.players.Length)
+        {
+            this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.players.Length;
+            this.players[currentPlayerIdx].State = PlayerState.rollDice;
+            this.dice.Clickable = true;
+
+            // Set letters
+            for(int i = 0; i < 4; i++)
+            {
+                this.letters[i].text = "";
+                this.letters[i].image.color = Color.white;
             }
         }
     }

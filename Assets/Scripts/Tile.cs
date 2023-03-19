@@ -9,10 +9,18 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     private int row;
     private int column;
     private string value;
+    private bool clickable;
+    private int playerIdx;
+
+    public bool Clickable { get => clickable; set => clickable = value; }
+    public string Value { get => value; set => this.value = value; }
+    public int PlayerIdx { get => playerIdx; set => playerIdx = value; }
 
     public void OnPointerClick (PointerEventData eventData)
     {
-        value = this.gameObject.GetComponent<InputField>().text;
+        if(!Clickable) return;
+
+        GameObject.Find("GameCoordinator").GetComponent<GameCoordinator>().tileClicked(0, row, column);
     }
 
     // Start is called before the first frame update

@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DiceState {
-	rolled,
-	waitingToBeRolled,
-};
-
 public class Dice : MonoBehaviour
 {
 	private string[] diceSides = {
@@ -25,22 +20,24 @@ public class Dice : MonoBehaviour
 		};
 
 	private string activeSide;
-	private DiceState state;
+	private bool clickable;
 
-    public DiceState State { get => state; set => state = value; }
     public string ActiveSide { get => activeSide; set => activeSide = value; }
+    public bool Clickable { get => clickable; set => clickable = value; }
 
     public void rollDice()
 	{
+		if(!Clickable) return;
 		// Generate random number between 0 and 11
     	int randomedNumber = Random.Range(0, diceSides.Length);
     	this.ActiveSide = this.diceSides[randomedNumber];
+		Clickable = false;
 	}
 
 	void Awake()
     {
         this.ActiveSide = diceSides[0];
-        this.State = DiceState.waitingToBeRolled;
+        this.Clickable = false;
     }
 
 	// Start is called before the first frame update
