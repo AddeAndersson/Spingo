@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public enum PlayerState {
@@ -26,30 +27,30 @@ public class Player : MonoBehaviour
     public PlayerState State { get => state; set => state = value; }
 
     // This function should update the UI elements based on the player state
-    public PlayerState makeAction()
+    public PlayerState makeAction(GameLog log)
 	{
 		if(this.State == PlayerState.rollDice)
         {
             // Enable dice roll for player
-            print($"It is {this.Name}'s turn to roll the dice!");
+            log.write($"It is {this.Name}'s turn to roll the dice!");
             //state = PlayerState.chooseLetter;
         }
         else if(this.State == PlayerState.chooseLetter)
         {
             // Enable letter selection from active dice side
-            print($"It is {this.Name}'s turn to choose a letter!");
+            log.write($"It is {this.Name}'s turn to choose a letter!");
             //state = PlayerState.placeLetter;
         }
         else if(this.State == PlayerState.placeLetter)
         {
             // Enable player to place letter  in tiles
-            print("Everybody place your letter in an available tile!");
+            log.write($"Everybody place your letter in an available tile!");
             //state = PlayerState.idle;
         }
         else if(this.State == PlayerState.idle)
         {
             // Do nothing
-            print($"{this.Name} has completed his turn!");
+            log.write($"{this.Name} has completed his turn!");
         }
 
         return this.State;

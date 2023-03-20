@@ -16,9 +16,20 @@ public class Letter : MonoBehaviour, IPointerClickHandler
     {
         if(!Clickable) return;
         
-        // Get value from input field and highlight
+        // Highlight
         InputField input = this.gameObject.GetComponent<InputField>();
-        value = input.text;
+        input.image.color = Color.green;
+
+        // Notify GC
+        GameObject.Find("GameCoordinator").GetComponent<GameCoordinator>().letterClicked(value);
+    }
+
+    private void OnKeyEvent()
+    {
+        if(!Clickable) return;
+        
+        // Highlight
+        InputField input = this.gameObject.GetComponent<InputField>();
         input.image.color = Color.green;
 
         // Notify GC
@@ -35,7 +46,35 @@ public class Letter : MonoBehaviour, IPointerClickHandler
     // Update is called once per frame
     void Update()
     {
-        
+        InputField input = this.gameObject.GetComponent<InputField>();
+        value = input.text;
+
+        if(value != "")
+        {
+            KeyCode kc;
+
+            if(value == "Å")
+            {
+                kc = KeyCode.RightBracket;
+            }
+            else if(value == "Ä")
+            {
+                kc = KeyCode.Quote;
+            }
+            else if(value == "Ö")
+            {
+                kc = KeyCode.BackQuote;
+            }
+            else
+            {
+                kc = (KeyCode)System.Enum.Parse(typeof(KeyCode), value);
+            }
+
+            if(Input.GetKeyDown(kc))
+            {
+                OnKeyEvent();
+            }
+        }
     }
 }
 

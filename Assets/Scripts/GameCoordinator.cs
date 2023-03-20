@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameCoordinator : MonoBehaviour
 {
@@ -12,24 +13,32 @@ public class GameCoordinator : MonoBehaviour
     private int currentPlayerIdx = 0;
     private PlayerState[] playerStates;
     private string currentLetter;
+    public GameLog gameLog;
 
     public string CurrentLetter { get => currentLetter; set => currentLetter = value; }
 
     public void diceClicked()
     {
+        if(!this.dice.Clickable) return;
+        
         this.dice.rollDice();
         this.players[currentPlayerIdx].State = PlayerState.chooseLetter;
-        print($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}.");
+        gameLog.write($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}.");
 
         // Set letters
-        for(int i = 0; i < 4; i++)
+        if(this.dice.ActiveSide != "Spingo!")
         {
-            this.letters[i].GetComponent<Letter>().Clickable = true;
-            this.letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
-            this.letters[i].image.color = Color.white;
+            for(int i = 0; i < 4; i++)
+            {
+                this.letters[i].GetComponent<Letter>().Clickable = true;
+                this.letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
+                this.letters[i].image.color = Color.white;
+            }
         }
-
-        // Enable letters
+        else
+        {
+            // Spingo!
+        }
     }
 
     public void letterClicked(string letter)
@@ -40,8 +49,8 @@ public class GameCoordinator : MonoBehaviour
         {
             this.letters[i].GetComponent<Letter>().Clickable = false;
         }
-
-        print(this.players[currentPlayerIdx].Name + " chose the letter '" + letter + "'.");
+        
+        gameLog.write($"Choose a tile to place '{letter}'.");
         
         for(int i = 0; i < players.Length; i++)
         {
@@ -101,7 +110,7 @@ public class GameCoordinator : MonoBehaviour
         this.currentPlayerIdx = Random.Range(0, this.players.Length - 1);
         this.players[currentPlayerIdx].State = PlayerState.rollDice;
         this.dice.Clickable = true;
-        this.players[currentPlayerIdx].makeAction();
+        this.players[currentPlayerIdx].makeAction(gameLog);
 
         this.playerStates = new PlayerState[players.Length];
         for(int i = 0; i < players.Length; i++)
@@ -119,7 +128,7 @@ public class GameCoordinator : MonoBehaviour
         {
             if(this.playerStates[i] != this.players[i].State)
             {
-                this.playerStates[i] = this.players[i].makeAction();
+                this.playerStates[i] = this.players[i].makeAction(gameLog);
             }
 
             if(this.playerStates[i] == PlayerState.idle)
