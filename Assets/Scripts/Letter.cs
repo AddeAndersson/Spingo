@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class Letter : MonoBehaviour, IPointerClickHandler
 {
-    private int index;
     private string value;
     private bool clickable;
 
@@ -39,8 +38,7 @@ public class Letter : MonoBehaviour, IPointerClickHandler
     // Start is called before the first frame update
     void Start()
     {
-        this.index = (int)char.GetNumericValue(this.gameObject.name[6]);
-        this.Clickable = false;
+        //this.Clickable = false;
     }
 
     // Update is called once per frame
@@ -49,7 +47,7 @@ public class Letter : MonoBehaviour, IPointerClickHandler
         InputField input = this.gameObject.GetComponent<InputField>();
         value = input.text;
 
-        if(value != "")
+        if(value != "" && value != "?")
         {
             KeyCode kc;
 

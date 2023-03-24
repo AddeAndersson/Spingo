@@ -5,7 +5,7 @@ using UnityEngine;
 public class Dice : MonoBehaviour
 {
 	private string[] diceSides = {
-			"Spingo!",
+			"SPINGO!",
 			"KAVQ",
 			"GEJÖ",
 			"DESO",
@@ -31,7 +31,7 @@ public class Dice : MonoBehaviour
 		// Generate random number between 0 and 11
     	int randomedNumber = Random.Range(0, diceSides.Length);
     	this.ActiveSide = this.diceSides[randomedNumber];
-		Clickable = false;
+		//Clickable = false;
 	}
 
 	void Awake()

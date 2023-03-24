@@ -8479,8 +8479,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1636443717}
-        m_TargetAssemblyTypeName: GameCoordinatorScript, Assembly-CSharp
-        m_MethodName: diceClicked
+        m_TargetAssemblyTypeName: GameCoordinator, Assembly-CSharp
+        m_MethodName: diceClickedEntry
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

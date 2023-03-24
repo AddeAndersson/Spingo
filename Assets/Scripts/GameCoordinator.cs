@@ -10,44 +10,112 @@ public class GameCoordinator : MonoBehaviour
 	public Dice dice = null;
     public Player[] players = null;
     public InputField[] letters = null;
+    private InputField[] spingoLetters = null;
     private int currentPlayerIdx = 0;
     private PlayerState[] playerStates;
     private string currentLetter;
     public GameLog gameLog;
+    private bool coroutineAllowed = true;
+    private string[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+        "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Å", "Ä", "Ö"};
 
     public string CurrentLetter { get => currentLetter; set => currentLetter = value; }
 
-    public void diceClicked()
+    public void diceClickedEntry()
     {
-        if(!this.dice.Clickable) return;
-        
-        this.dice.rollDice();
-        this.players[currentPlayerIdx].State = PlayerState.chooseLetter;
-        gameLog.write($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}.");
+        StartCoroutine(diceClicked());
+    }
 
-        // Set letters
-        if(this.dice.ActiveSide != "Spingo!")
+    private IEnumerator diceClicked()
+    {
+        this.coroutineAllowed = false;
+        if(!this.dice.Clickable || !this.coroutineAllowed) yield return new WaitForSeconds(0);
+        
+        // Reset, hide, and disable spingo letters
+        for(int i = 0; i < this.spingoLetters.Length; i++)
         {
-            for(int i = 0; i < 4; i++)
+            this.spingoLetters[i].image.color = Color.white;
+            this.spingoLetters[i].gameObject.SetActive(false);
+        }
+
+        // Reset, enable, original letters
+        for(int i = 0; i < this.letters.Length; i++)
+        {
+            this.letters[i].image.color = Color.white;
+            this.letters[i].gameObject.SetActive(true);
+        }
+
+        // "Animate" dice
+        string previousSide;
+        for(int r = 0; r < 10; r++)
+        {
+            previousSide = this.dice.ActiveSide;
+            this.dice.rollDice();
+            if(previousSide == this.dice.ActiveSide)
             {
-                this.letters[i].GetComponent<Letter>().Clickable = true;
-                this.letters[i].text = "" + this.dice.ActiveSide[i]; // Conversion to string
-                this.letters[i].image.color = Color.white;
+                r--;
+                continue;
+            }
+
+            for(int i = 0; i < this.letters.Length; i++)
+            {
+                this.letters[i].text = this.dice.ActiveSide == "SPINGO!" ? "?" : "" + this.dice.ActiveSide[i];
+            }
+            yield return new WaitForSeconds((r + 1) * 0.05f);
+        }
+
+        this.players[currentPlayerIdx].State = PlayerState.chooseLetter;
+
+        if(this.dice.ActiveSide == "SPINGO!")
+        {
+            // Hide original letters
+            for(int i = 0; i < this.letters.Length; i++)
+            {
+                this.letters[i].gameObject.SetActive(false);
+            }
+
+            // Enable spingo letters
+            for(int i = 0; i < this.spingoLetters.Length; i++)
+            {
+                this.spingoLetters[i].gameObject.SetActive(true);
+                this.spingoLetters[i].GetComponent<Letter>().Clickable = true;
             }
         }
         else
         {
-            // Spingo!
+            // Hide spingo letters
+            for(int i = 0; i < this.spingoLetters.Length; i++)
+            {
+                this.spingoLetters[i].gameObject.SetActive(false);
+            }
+
+            // Enable default letters
+            for(int i = 0; i < 4; i++)
+            {
+                this.letters[i].gameObject.SetActive(true);
+                this.letters[i].GetComponent<Letter>().Clickable = true;
+            }
         }
+        
+
+        this.dice.Clickable = false;
+        string end = this.dice.ActiveSide == "SPINGO!" ? "" : ".";
+        this.gameLog.write($"{this.players[currentPlayerIdx].Name} rolled {this.dice.ActiveSide}{end}");
+        this.coroutineAllowed = true;
     }
 
     public void letterClicked(string letter)
     {
         this.CurrentLetter = letter;
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < this.letters.Length; i++)
         {
             this.letters[i].GetComponent<Letter>().Clickable = false;
+        }
+
+        for(int i = 0; i < this.spingoLetters.Length; i++)
+        {
+            this.spingoLetters[i].GetComponent<Letter>().Clickable = false;
         }
         
         gameLog.write($"Choose a tile to place '{letter}'.");
@@ -117,6 +185,19 @@ public class GameCoordinator : MonoBehaviour
         {
             this.playerStates[i] = this.players[i].State;
         }
+
+        // Instantiate all letters
+        this.spingoLetters = new InputField[alphabet.Length];
+        for(int i = 0; i < alphabet.Length; i++)
+        {
+            this.spingoLetters[i] = Instantiate(this.letters[0], GameObject.Find("Letters").transform);
+            this.spingoLetters[i].text = alphabet[i];
+            this.spingoLetters[i].gameObject.name = "Spingo" + alphabet[i];
+            float y = i < 15 ? 50.0f : -50.0f;
+            float x = i < 15 ? -700.0f + i * 100.0f : -650.0f + (i - 15.0f) * 100.0f;
+            this.spingoLetters[i].gameObject.transform.localPosition = new Vector3(x, y, 0.0f);
+            this.spingoLetters[i].gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -144,10 +225,17 @@ public class GameCoordinator : MonoBehaviour
             this.dice.Clickable = true;
 
             // Set letters
-            for(int i = 0; i < 4; i++)
+            for(int i = 0; i < this.letters.Length; i++)
             {
                 this.letters[i].text = "";
                 this.letters[i].image.color = Color.white;
+                this.letters[i].gameObject.SetActive(false);
+            }
+
+            for(int i = 0; i < this.spingoLetters.Length; i++)
+            {
+                this.spingoLetters[i].image.color = Color.white;
+                this.spingoLetters[i].gameObject.SetActive(false);
             }
         }
     }
